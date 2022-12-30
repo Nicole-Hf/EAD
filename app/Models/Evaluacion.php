@@ -37,4 +37,8 @@ class Evaluacion extends Model
     public function resultados() {
         return $this->hasMany(Resultado::class, 'evaluacionId');
     }
+
+    public function getAllTests($infanteId) {
+        return $this->where('infanteId', $infanteId)->orderBy('id', 'DESC')->get();
+    }
 }

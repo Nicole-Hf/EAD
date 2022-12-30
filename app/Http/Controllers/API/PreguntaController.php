@@ -25,7 +25,7 @@ class PreguntaController extends Controller
             if ($evaluacion->edadMeses >= $edad->rangoInicial && $evaluacion->edadMeses <= $edad->rangoFinal)
                 $edadId = $edad->id;
         }
-        
+
         $edad = Edad::findOrFail($edadId);
         $item = Pregunta::where(['areaId' => $area->id, 'edadId' => $edadId])->first();
 
@@ -36,12 +36,10 @@ class PreguntaController extends Controller
         ], 200);
     }
 
-    public function saveResultado(Request $request, $evaluacionId, $preguntaId) 
+    public function saveResultado(Request $request, $evaluacionId, $preguntaId)
     {
         $validator = Validator::make($request->all(), [
             'resultado' => 'required',
-            //'evaluacionId' => 'required',
-            //'preguntaId' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -58,32 +56,52 @@ class PreguntaController extends Controller
         $resultado->preguntaId = $pregunta->id;
         $resultado->save();
 
+        if ($resultado->resultado == 1) {
+            $evaluacion->contadorUno = $evaluacion->contadorUno + 1;
+            $evaluacion->save();
+        } else {
+            $evaluacion->contadorCero = $evaluacion->contadorCero + 1;
+            $evaluacion->save();
+        }
+
         return response([
             'resultado' => $resultado,
+            'evaluacion' => $evaluacion,
         ], 200);
     }
 
-    public function getNextItem($resultadoId) 
+    public function getNextItem($resultadoId, $areaId)
     {
-        $resultado = Resultado::findOrFail($resultadoId);
+        /*$resultado = Resultado::findOrFail($resultadoId);
         $primerPregunta = Resultado::where('evaluacionId', $resultado->evaluacionId)->first();
-        $primerResultado = $primerPregunta->resultado;
+        $primerResultado = $primerPregunta->resultado;*/
+
+        $resultado = Resultado::findOrFail($resultadoId);
+        $resultados = Resultado::where('evaluacionId', $resultado->evaluacionId)->get();
+
+        foreach ($resultados as $result) {
+            $pregunta = Pregunta::findOrFail($result->preguntaId);
+            if ($pregunta->areaId == $areaId) {
+                $primerResultado = $result->resultado;
+                break;
+            }
+        }
 
         $evaluacion = Evaluacion::findOrFail($resultado->evaluacionId);
         $pregunta = Pregunta::findOrFail($resultado->preguntaId);
 
         if ($primerResultado == 1) {
-            if ($resultado->resultado == 1) {
+            /*if ($resultado->resultado == 1) {
                 $evaluacion->contadorUno = $evaluacion->contadorUno + 1;
                 $evaluacion->save();
-            } 
+            }
             else {
                 $evaluacion->contadorCero = $evaluacion->contadorCero + 1;
                 $evaluacion->save();
-            }
+            }*/
 
             if ($evaluacion->contadorCero <= 3) {
-                if ($evaluacion->contadorUno <= 3) {            
+                if ($evaluacion->contadorUno <= 3) {
                     $nextItem = $pregunta->id + 1;
                     $nextPregunta = Pregunta::findOrFail($nextItem);
                     $edad = Edad::findOrFail($nextPregunta->edadId);
@@ -96,21 +114,21 @@ class PreguntaController extends Controller
                     ], 200);
                 }
             }
-            
+
             return response([
                 'message' => 'El contador ha llegado a 3'
             ], 200);
-        } 
+        }
         else {
-            if ($resultado->resultado == 1) {
+            /*if ($resultado->resultado == 1) {
                 $evaluacion->contadorUno = $evaluacion->contadorUno + 1;
                 $evaluacion->save();
-            } 
+            }
             else {
                 $evaluacion->contadorCero = $evaluacion->contadorCero + 1;
                 $evaluacion->save();
-            }
-    
+            }*/
+
             if ($evaluacion->contadorCero <= 3) {
                 if ($evaluacion->contadorUno <= 3) {
                     $nextItem = $pregunta->id - 1;
@@ -125,10 +143,25 @@ class PreguntaController extends Controller
                     ], 200);
                 }
             }
-            
+
             return response([
                 'message' => 'El contador ha llegado a 3'
             ], 200);
         }
+    }
+
+    public function primerResultadoxArea($resultadoId, $areaId) {
+        $resultado = Resultado::findOrFail($resultadoId);
+        $resultados = Resultado::where('evaluacionId', $resultado->evaluacionId)->get();
+
+        foreach ($resultados as $resultado) {
+            $pregunta = Pregunta::findOrFail($resultado->preguntaId);
+            if ($pregunta->areaId == $areaId) {
+                $primerResultado = $resultado->resultado;
+                break;
+            }
+        }
+
+        return response([$primerResultado, $pregunta]);
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Area;
 use App\Models\Edad;
 use App\Models\Evaluacion;
 use App\Models\Personal;
+use App\Models\Infante;
 use App\Models\Pregunta;
 use App\Models\Resultado;
 use Illuminate\Http\Request;
@@ -47,13 +48,13 @@ class EvaluacionController extends Controller
         ], 200);
     }
 
-    public function getTest($evaluacionId) 
+    public function getTest($evaluacionId)
     {
         $evaluacion = Evaluacion::findOrFail($evaluacionId);
-        
+
         $evaluacion['edadMeses'] = strip_tags($evaluacion['edadMeses']);
         $evaluacion['edadMeses']=$Content = preg_replace("/&#?[a-z0-9]+;/i"," ",$evaluacion['edadMeses']);
-  
+
         return response([
             'evaluacion' => $evaluacion,
         ], 200);
@@ -62,6 +63,9 @@ class EvaluacionController extends Controller
     public function getResultadoArea($evaluacionId, $areaId)
     {
         $evaluacion = Evaluacion::findOrFail($evaluacionId);
+        $evaluacion->contadorCero = 0;
+        $evaluacion->contadorUno = 0;
+        $evaluacion->save();
         $resultados = Resultado::where('evaluacionId', $evaluacionId)->get();
 
         foreach ($resultados as $resultado) {
@@ -87,32 +91,67 @@ class EvaluacionController extends Controller
                 }
             }
         }
-        
+
         switch ($areaId) {
             case 1:
                 return response([
                     'resultadoArea' => $evaluacion->resultadoMG,
                     'area' => 'Motricidad Gruesa',
+                    'id' => 1
                 ], 200);
                 break;
             case 2:
                 return response([
                     'resultadoArea' => $evaluacion->resultadoMF,
                     'area' => 'Motricidad Fino Adaptativa',
+                    'id' => 2
                 ], 200);
                 break;
             case 3:
                 return response([
                     'resultadoArea' => $evaluacion->resultadoAL,
                     'area' => 'Audición Lenguaje',
+                    'id' => 3
                 ], 200);
                 break;
             case 4:
                 return response([
                     'resultadoArea' => $evaluacion->resultadoPS,
                     'area' => 'Personal Social',
+                    'id' => 4
                 ], 200);
                 break;
         }
+    }
+
+    function getResultTotal($testId)
+    {
+        $evaluacion = Evaluacion::findOrFail($testId);
+
+        $total = $evaluacion->resultadoMG + $evaluacion->resultadoMF + $evaluacion->resultadoAL + $evaluacion->resultadoPS;
+        $evaluacion->total = $total;
+        $evaluacion->save();
+
+        return response([
+            'total' => $evaluacion->total,
+            'areaMG' => $evaluacion->resultadoMG,
+            'areaMF' => $evaluacion->resultadoMF,
+            'areaAL' => $evaluacion->resultadoAL,
+            'areaPS' => $evaluacion->resultadoPS,
+        ], 200);
+    }
+
+    public function getTests($infanteId)
+    {
+        $kid = Infante::find($infanteId);
+        $list = new Evaluacion();
+        $list = $list->getAllTests($kid->id);
+
+        foreach ($list as $item) {
+            $item['fecha'] = strip_tags($item['fecha']);
+            $item['fecha']=$Content = preg_replace("/&#?[a-z0-9]+;/i"," ",$item['fecha']);
+        }
+
+        return response()->json(['evaluacion' =>$list], 200);
     }
 }

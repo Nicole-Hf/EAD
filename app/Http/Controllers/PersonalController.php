@@ -7,8 +7,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\DB;
 
-class UserController extends Controller
+class PersonalController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,9 +19,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::paginate(5);
-        $users->load('personal');
-        return view('usuarios.index', compact('users'));
+        $users = Personal::paginate(5);
+        $users->load('user');
+        return view('personal.index', compact('users'));
     }
 
     /**
@@ -29,7 +31,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('usuarios.crear');
+        $roles = Role::pluck('name','name')->all();
+        return view('personal.crear', compact('roles'));
     }
 
     /**
@@ -52,19 +55,21 @@ class UserController extends Controller
         $user = new User();
         $user->name = $request->input('name');
         $user->email = $request->input('email');
-        $user->password = bcrypt('123456789');
+        $user->password = bcrypt($request->input('name'));
         $user->save();
+
+        $user->assignRole($request->input('roles'));
 
         $personal = new Personal();
         $personal->nombre = $request->input('nombre');
         $personal->direccion = $request->input('direccion');
         $personal->telefono = $request->input('telefono');
         $personal->ci = $request->input('ci');
-        $personal->cargo = $request->input('cargo');
+        $personal->cargo = $request->input('roles');
         $personal->userId = $user->id;
         $personal->save();
 
-        return redirect()->route('usuarios.index');
+        return redirect()->route('personal.index');
     }
 
     /**
@@ -75,9 +80,12 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        $user = User::find($id);
+        $user = Personal::find($id);
+        $user->load('user');
+        $roles = Role::pluck('name','name')->all();
+        $userRole = $user->user->roles->pluck('name','name')->all();
 
-        return view('usuarios.editar',compact('user'));
+        return view('personal.editar', compact('user','roles','userRole'));
     }
 
     /**
@@ -89,24 +97,31 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $personal = Personal::find($id);
+
         $this->validate($request, [
-            'email' => 'required|email|unique:users,email,'.$id,
+            'email' => 'required|email|unique:users,email,'.$personal->userId,
             'nombre' => 'required|string',
             'direccion' => 'required|string',
             'telefono' => 'required|string',
             'ci' => 'required|string',
         ]);
 
-        $input = $request->only('email');
-        $user = User::find($id);
-        $user->update($input);
-
         $data = $request->only('nombre', 'direccion', 'telefono', 'ci');
-        $personal = Personal::where('userId', $user->id)->first();
-        $personal = Personal::find($personal->id);
         $personal->update($data);
 
-        return redirect()->route('usuarios.index');
+        $input = $request->only('email');
+        $user = User::find($personal->userId);
+        $user->update($input);
+
+        DB::table('model_has_roles')->where('model_id',$personal->userId)->delete();
+        $user->assignRole($request->input('roles'));
+
+        /*$personal = Personal::where('userId', $user->id)->first();
+        $personal = Personal::find($personal->id);
+        $personal->update($data);*/
+
+        return redirect()->route('personal.index');
     }
 
     /**
@@ -118,6 +133,6 @@ class UserController extends Controller
     public function destroy($id)
     {
         User::find($id);
-        return redirect()->route('usuarios.index');
+        return redirect()->route('personal.index');
     }
 }
