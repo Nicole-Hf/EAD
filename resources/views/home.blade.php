@@ -76,7 +76,7 @@
                                 <div class="col-md-4 col-xl-4">
                                     <div class="card bg-c-green order-card">
                                         <div class="card-block">
-                                            <h5>Infantes</h5>
+                                            <h5>Evaluaciones</h5>
                                             @php
                                                 use App\Models\Evaluacion;
                                                 $cant_blogs = Evaluacion::count();

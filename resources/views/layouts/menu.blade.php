@@ -1,5 +1,5 @@
 <li class="side-menus {{ Request::is('home') ? 'active' : '' }}">
-    <a class="nav-link" href="/">
+    <a class="nav-link" href="/home">
         <i class="fas fa-th-large"></i><span>Home</span>
     </a>
     @can('ver-rol')

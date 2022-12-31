@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\EvaluacionController;
-use App\Http\Controllers\InfanteController;
 use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\InfanteController;
+use App\Http\Controllers\EvaluacionController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UsuarioController;
 
@@ -19,7 +19,7 @@ use App\Http\Controllers\Admin\UsuarioController;
 */
 
 Route::get('/', function () {
-    return view('home');
+    return view('auth.login');
 });
 
 
@@ -27,7 +27,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::group(['middleware' => ['auth']], function() {
-    //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::resource('personal', PersonalController::class);
     Route::resource('infantes', InfanteController::class);
     Route::resource('roles', RoleController::class);
