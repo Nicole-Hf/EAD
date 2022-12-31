@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EvaluacionController;
 use App\Http\Controllers\InfanteController;
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\Admin\RoleController;
@@ -18,7 +19,7 @@ use App\Http\Controllers\Admin\UsuarioController;
 */
 
 Route::get('/', function () {
-    return view('auth.login');
+    return view('home');
 });
 
 
@@ -29,7 +30,8 @@ Route::group(['middleware' => ['auth']], function() {
     //Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::resource('personal', PersonalController::class);
     Route::resource('infantes', InfanteController::class);
-    Route::post('change-password', [App\Http\Controllers\HomeController::class, 'updatePassword'])->name('updatePassword');
     Route::resource('roles', RoleController::class);
     Route::resource('usuarios', UsuarioController::class);
+    Route::resource('evaluaciones', EvaluacionController::class);
+    Route::post('change-password', [App\Http\Controllers\HomeController::class, 'updatePassword'])->name('updatePassword');
 });

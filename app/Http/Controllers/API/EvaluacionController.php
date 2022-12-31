@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Area;
 use App\Models\Edad;
+use App\Models\Escala;
 use App\Models\Evaluacion;
 use App\Models\Personal;
 use App\Models\Infante;
@@ -132,12 +133,33 @@ class EvaluacionController extends Controller
         $evaluacion->total = $total;
         $evaluacion->save();
 
+        $edades = Edad::all();
+
+        foreach ($edades as $edad) {
+            if ($evaluacion->edadMeses >= $edad->rangoInicial && $evaluacion->edadMeses <= $edad->rangoFinal)
+            {
+                $edadId = $edad->id;
+                break;
+            }
+        }
+
+        $escalas = Escala::where('edadId', $edadId)->get();
+
+        foreach ($escalas as $escala) {
+            if (($evaluacion->total >= $escala->rangoInicial && $evaluacion->total <= $escala->rangoFinal))
+            {
+                $etiqueta = $escala->etiqueta;
+                break;
+            }
+        }
+
         return response([
             'total' => $evaluacion->total,
             'areaMG' => $evaluacion->resultadoMG,
             'areaMF' => $evaluacion->resultadoMF,
             'areaAL' => $evaluacion->resultadoAL,
             'areaPS' => $evaluacion->resultadoPS,
+            'etiqueta' => $etiqueta,
         ], 200);
     }
 
@@ -152,6 +174,17 @@ class EvaluacionController extends Controller
             $item['fecha']=$Content = preg_replace("/&#?[a-z0-9]+;/i"," ",$item['fecha']);
         }
 
-        return response()->json(['evaluacion' =>$list], 200);
+        return response()->json($list);
+    }
+
+    public function saveObservation(Request $request, $id)
+    {
+        $evaluacion = Evaluacion::find($id);
+        $evaluacion->observaciones = $request->observaciones;
+        $evaluacion->save();
+
+        return response([
+            'evaluacion' => $evaluacion
+        ], 200);
     }
 }

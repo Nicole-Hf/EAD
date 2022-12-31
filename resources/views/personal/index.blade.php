@@ -12,7 +12,9 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <a class="btn btn-warning" href="{{ route('personal.create') }}">Nuevo</a>
+                            @can('crear-personal')
+                                <a class="btn btn-warning" href="{{ route('personal.create') }}">Nuevo</a>
+                            @endcan
                             <table class="table table-striped mt-2">
                                 <thead style="background-color: #5B5188">
                                     <th style="display: none">ID</th>
@@ -37,16 +39,20 @@
                                             </td>
                                             <td>{{ $usuario->user->email }}</td>
                                             <td>
-                                                <a class="btn btn-success"
-                                                    href="{{ route('personal.edit', $usuario->id) }}">Editar</a>
+                                                @can('editar-personal')
+                                                    <a class="btn btn-success"
+                                                        href="{{ route('personal.edit', $usuario->id) }}">Editar</a>
+                                                @endcan
                                                 {{-- <a class="btn btn-secondary" href="{{route('usuarios.show', $usuario->id)}}">Ver</a> --}}
-                                                {!! Form::open([
-                                                    'method' => 'DELETE',
-                                                    'route' => ['personal.destroy', $usuario->id],
-                                                    'style' => 'display:inline',
-                                                ]) !!}
-                                                {!! Form::submit('Borrar', ['class' => 'btn btn-danger']) !!}
-                                                {!! Form::close() !!}
+                                                @can('borrar-personal')
+                                                    {!! Form::open([
+                                                        'method' => 'DELETE',
+                                                        'route' => ['personal.destroy', $usuario->id],
+                                                        'style' => 'display:inline',
+                                                    ]) !!}
+                                                    {!! Form::submit('Borrar', ['class' => 'btn btn-danger']) !!}
+                                                    {!! Form::close() !!}
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach

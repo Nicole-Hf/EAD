@@ -12,7 +12,9 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <a class="btn btn-warning" href="{{ route('infantes.create')}}">Nuevo</a>
+                            @can('crear-infante')
+                                <a class="btn btn-warning" href="{{ route('infantes.create') }}">Nuevo</a>
+                            @endcan
                             <table class="table table-striped mt-2">
                                 <thead style="background-color: #5B5188">
                                     <th style="display: none">ID</th>
@@ -25,17 +27,29 @@
                                 <tbody>
                                     @foreach ($infantes as $infante)
                                         <tr>
-                                            <td style="display: none">{{$infante->id}}</td>
+                                            <td style="display: none">{{ $infante->id }}</td>
                                             <td>{{ $infante->nombre }}</td>
                                             <td>{{ $infante->apellidoPaterno }}</td>
                                             <td>{{ $infante->apellidoMaterno }}</td>
                                             <td>{{ $infante->edad }}</td>
                                             <td>
-                                                <a class="btn btn-secondary" href="{{route('infantes.show', $infante->id)}}">Ver</a>
-                                                <a class="btn btn-success" href="{{route('infantes.edit', $infante->id)}}">Editar</a>
-                                                {!! Form::open(['method' => 'DELETE', 'route' => ['infantes.destroy', $infante->id], 'style'=>'display:inline']) !!}
-                                                    {!! Form::submit('Borrar', ['class'=>'btn btn-danger']) !!}
-                                                {!! Form::close() !!}
+                                                @can('ver-infante')
+                                                    <a class="btn btn-secondary"
+                                                        href="{{ route('infantes.show', $infante->id) }}">Ver</a>
+                                                @endcan
+                                                @can('editar-infante')
+                                                    <a class="btn btn-success"
+                                                        href="{{ route('infantes.edit', $infante->id) }}">Editar</a>
+                                                @endcan
+                                                @can('borrar-infante')
+                                                    {!! Form::open([
+                                                        'method' => 'DELETE',
+                                                        'route' => ['infantes.destroy', $infante->id],
+                                                        'style' => 'display:inline',
+                                                    ]) !!}
+                                                    {!! Form::submit('Borrar', ['class' => 'btn btn-danger']) !!}
+                                                    {!! Form::close() !!}
+                                                @endcan
                                             </td>
                                         </tr>
                                     @endforeach

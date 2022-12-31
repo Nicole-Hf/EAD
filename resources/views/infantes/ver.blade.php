@@ -8,10 +8,10 @@
             <h3 class="page__heading">Información</h3>
         </div>
         <div class="section-body">
-            <div class="card mb-3" style="max-width: 540px;">
+            <div class="card mb-3" style="max-width: 640px;">
                 <div class="row g-0">
                     <div class="col-md-4">
-                        <img src="..." class="img-fluid rounded-start" alt="...">
+                        <img src="{{ asset('img/profile2.png') }}" class="img-fluid rounded-start" style="height:90%;">
                     </div>
                     <div class="col-md-8">
                         <div class="card-body">

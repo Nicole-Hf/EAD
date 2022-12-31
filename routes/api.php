@@ -27,9 +27,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/children', [ChildrenController::class, 'getChildren']);
     Route::get('/children/{id}', [ChildrenController::class, 'getKid']);
     Route::post('/evaluacion', [EvaluacionController::class, 'createTest']);
+    Route::post('/evaluacion/{test}', [EvaluacionController::class, 'saveObservation']);
     Route::get('/evaluacion/{kid}', [EvaluacionController::class, 'getTests']);
-    //Route::get('/evaluacion/{test}', [EvaluacionController::class, 'getTest']);
     Route::get('/evaluacion/{evaluacion}/{area}', [EvaluacionController::class, 'getResultadoArea']);
+    Route::get('/test/{test}', [EvaluacionController::class, 'getTest']);
     Route::get('/items/{area}/{evaluacion}', [PreguntaController::class, 'getItem']);
     Route::get('/nextitems/{resultado}/{area}', [PreguntaController::class, 'getNextItem']);
     Route::post('/resultado/{evaluacion}/{pregunta}', [PreguntaController::class, 'saveResultado']);

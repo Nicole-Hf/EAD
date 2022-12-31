@@ -29,15 +29,21 @@ class PermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'borrar-rol'])->assignRole($role0);
 
         //personal
-        Permission::firstOrCreate(['name' => 'ver-personal'])->syncRoles([$role1,$role2]);
+        Permission::firstOrCreate(['name' => 'ver-personal'])->syncRoles([$role1, $role2]);
         Permission::firstOrCreate(['name' => 'crear-personal'])->syncRoles([$role0, $role1]);
         Permission::firstOrCreate(['name' => 'editar-personal'])->syncRoles([$role0, $role1, $role2]);
         Permission::firstOrCreate(['name' => 'borrar-personal'])->syncRoles([$role0, $role1]);
 
         //infantes
-        Permission::firstOrCreate(['name' => 'ver-infante'])->syncRoles([$role1,$role2]);
+        Permission::firstOrCreate(['name' => 'ver-infante'])->syncRoles([$role1, $role2]);
         Permission::firstOrCreate(['name' => 'crear-infante'])->syncRoles([$role0, $role1]);
         Permission::firstOrCreate(['name' => 'editar-infante'])->syncRoles([$role0, $role1, $role2]);
         Permission::firstOrCreate(['name' => 'borrar-infante'])->syncRoles([$role0, $role1]);
+
+        //evaluacion
+        Permission::firstOrCreate(['name' => 'ver-evaluacion'])->syncRoles([$role1, $role2, $role4]);
+        Permission::firstOrCreate(['name' => 'crear-evaluacion'])->syncRoles([$role0, $role3]);
+        Permission::firstOrCreate(['name' => 'editar-evaluacion'])->syncRoles([$role0, $role3, $role4]);
+        Permission::firstOrCreate(['name' => 'borrar-evaluacion'])->syncRoles([$role0]);
     }
 }

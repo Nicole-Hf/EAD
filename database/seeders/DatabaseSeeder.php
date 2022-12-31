@@ -22,7 +22,9 @@ class DatabaseSeeder extends Seeder
             PreguntaMFASeeder::class,
             PreguntaALSeeder::class,
             PreguntaPSSeeder::class,
-            PermissionSeeder::class
+            PermissionSeeder::class,
+            EscalaSeeder::class,
+            InfanteSeeder::class
         ]);
     }
 }

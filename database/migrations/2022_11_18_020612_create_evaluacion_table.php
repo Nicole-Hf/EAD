@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('fecha');
             $table->double('peso');
             $table->double('altura');
+            $table->string('observaciones')->nullable();
             $table->unsignedSmallInteger('edadMeses');
             $table->unsignedBigInteger('resultadoMG')->default(0);
             $table->unsignedBigInteger('resultadoMF')->default(0);

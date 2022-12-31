@@ -18,4 +18,8 @@ class Edad extends Model
     public function preguntas() {
         return $this->hasMany(Pregunta::class, 'edadId');
     }
+
+    public function escalas() {
+        return $this->hasMany(Pregunta::class, 'edadId');
+    }
 }

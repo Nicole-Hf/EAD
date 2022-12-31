@@ -65,7 +65,7 @@ class PersonalController extends Controller
         $personal->direccion = $request->input('direccion');
         $personal->telefono = $request->input('telefono');
         $personal->ci = $request->input('ci');
-        $personal->cargo = $request->input('roles');
+        //$personal->cargo = $request->input('roles');
         $personal->userId = $user->id;
         $personal->save();
 

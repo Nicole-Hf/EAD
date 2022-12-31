@@ -17,8 +17,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedSmallInteger('item');
             $table->string('pregunta');
-            $table->string('observacion')->nullable();
-            $table->string('resultado')->nullable();
             $table->unsignedBigInteger('edadId');
             $table->unsignedBigInteger('areaId');
             $table->timestamps();
